@@ -62,6 +62,7 @@ jobs:
         env:
           ORG_UUID: ${{ secrets.ORG_UUID }}
           UPSTREAM_UUID: ${{ secrets.UPSTREAM_UUID }}
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
 
       - name: Send Slack update
         run: php .github/scripts/php/slack.php

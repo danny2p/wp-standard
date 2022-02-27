@@ -43,3 +43,6 @@ TIME_DIFF=$(bc <<< "scale=2; $DURATION / 60")
 MIN=$(printf "%.2f" $TIME_DIFF)
 echo -e "Finished ${SITE} in ${MIN} minutes"
 echo "${SITE},${ID},${MIN}" >> /tmp/results.txt
+
+SLACK="Finished ${SITE} in ${MIN} minutes"
+curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
