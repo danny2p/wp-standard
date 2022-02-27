@@ -13,7 +13,7 @@ LIVE=$(echo "${SITE}.live")
 START=$SECONDS
 
 # Tell slack we're starting this site
-SLACK_START="Started ${SITE_LINK} deployment"
+SLACK_START="Started ${SITE} deployment"
 
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
 echo -e "Starting ${SITE}";
@@ -45,4 +45,4 @@ echo "${SITE},${ID},${MIN}" >> /tmp/results.txt
 
 SITE_LINK="<a href='https://live-${SITE}.pantheonsite.io'>${SITE}</a>";
 SLACK="Finished ${SITE_LINK} deployment in ${MIN} minutes"
-curl -X POST -H 'Content-type: application/json' --data "{'text/html':'${SLACK}'}" $SLACK_WEBHOOK
+curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
