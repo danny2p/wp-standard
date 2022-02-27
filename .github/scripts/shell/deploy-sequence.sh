@@ -27,6 +27,9 @@ terminus upstream:updates:apply $DEV -q
 
 # Deploy code to test and live
 terminus env:deploy $TEST --cc --updatedb -n -q
+
+# Backup DB only for live prior to deploy, 30 day retention
+terminus backup:create --element database --keep-for 30 -- $LIVE
 terminus env:deploy $LIVE --cc --updatedb -n -q
 
 # Report time to results.
