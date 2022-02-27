@@ -106,13 +106,13 @@ try {
     $data = [
       'username' => 'Github Actions',
       'icon_emoji' => ':crystal_ball:',
-      'blocks' => [
+      'blocks' => [[
         'type' => 'section',
         'text' => [
           'type' => 'mrkdwn',
           'text' => "Bulk Parallel deployments complete. ".count($results)." sites deployed."
         ]
-      ]
+      ]]
     ];
     
     curl_url($url, $data);

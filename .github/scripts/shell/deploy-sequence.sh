@@ -13,7 +13,9 @@ LIVE=$(echo "${SITE}.live")
 START=$SECONDS
 
 # Tell slack we're starting this site
-curl -X POST -H 'Content-type: application/json' --data "{'text':'Started ${SITE} deployment'}" $SLACK_WEBHOOK
+SLACK_START="Started ${SITE_LINK} deployment"
+
+curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
 echo -e "Starting ${SITE}";
 
 # Check site upstream for updates, apply
