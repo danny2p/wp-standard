@@ -106,8 +106,18 @@ try {
     $data = [
       'username' => 'Github Actions',
       'icon_emoji' => ':crystal_ball:',
+      'blocks' => [
+        'type' => 'section',
+        'text' => [
+          'type' => 'mrkdwn',
+          'text' => "Bulk Parallel deployments complete. ".count($results)." sites deployed."
+        ]
+      ]
     ];
+    
+    curl_url($url, $data);
 
+/*
     // Send updates in batches
     foreach ($batches as $batch_id => $batch_data) {
       $data['blocks'] = $batch_data;
@@ -117,6 +127,7 @@ try {
       curl_url($url, $data);
       sleep(2);
     }
+*/
   }
 } catch (Exception $e) {
   echo $e->getMessage();
