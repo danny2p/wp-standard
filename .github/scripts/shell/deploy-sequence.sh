@@ -41,6 +41,6 @@ MIN=$(printf "%.2f" $TIME_DIFF)
 echo -e "Finished ${SITE} in ${MIN} minutes"
 echo "${SITE},${ID},${MIN}" >> /tmp/results.txt
 
-SITE_LINK = "<a href='https://live-${SITE}.pantheonsite.io'>${SITE}</a>";
+SITE_LINK="<a href='https://live-${SITE}.pantheonsite.io'>${SITE}</a>";
 SLACK="Finished ${SITE_LINK} deployment in ${MIN} minutes"
 curl -X POST -H 'Content-type: application/json' --data "{'text/html':'${SLACK}'}" $SLACK_WEBHOOK
