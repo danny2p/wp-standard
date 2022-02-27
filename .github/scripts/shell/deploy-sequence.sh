@@ -20,6 +20,7 @@ terminus site:upstream:clear-cache $1 -q
 # terminus connection:set "${1}.dev" git
 # STATUS=$(terminus upstream:update:status "${1}.dev")
 terminus upstream:updates:apply $DEV -q
+echo -e "Deployment to Dev complete (${SITE})";
 
 # Run drush updates on dev, clear cache
 # terminus drush "${1}.dev" -- updb -y
@@ -27,10 +28,14 @@ terminus upstream:updates:apply $DEV -q
 
 # Deploy code to test and live
 terminus env:deploy $TEST --cc --updatedb -n -q
+echo -e "Deployment to Test complete (${SITE})";
 
 # Backup DB only for live prior to deploy, 30 day retention
 terminus backup:create --element database --keep-for 30 -- $LIVE
+echo -e "Backup of Live complete (${SITE})";
+
 terminus env:deploy $LIVE --cc --updatedb -n -q
+echo -e "Deployment to Live complete (${SITE})";
 
 # Report time to results.
 DURATION=$(( SECONDS - START ))
