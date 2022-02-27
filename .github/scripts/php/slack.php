@@ -110,7 +110,7 @@ try {
         'type' => 'section',
         'text' => [
           'type' => 'mrkdwn',
-          'text' => "Bulk Parallel deployments complete. ".count($results)." sites deployed."
+          'text' => ":tada: Bulk Parallel deployments complete! ".count($results)." sites deployed."
         ]
       ]]
     ];
