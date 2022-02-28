@@ -38,7 +38,7 @@ curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $S
 
 # Backup DB only for live prior to deploy, 30 day retention
 terminus backup:create --element database --keep-for 30 -- $LIVE
-SLACK=":white_check_mark: Finished ${SITE} Live Backup"
+SLACK="Finished ${SITE} Live Backup"
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 terminus env:deploy $LIVE --cc -n -q
 
