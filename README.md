@@ -1,3 +1,7 @@
+# Custom Upstream Mass Deployment Demo
+
+This repository demonstrates a mass deployment to a portfolio of sites in a github action
+
 # WordPress
 
 This is a WordPress repository configured to run on the [Pantheon platform](https://pantheon.io).
