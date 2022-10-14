@@ -10,7 +10,7 @@ database:
   version: 10.4
 
 # See https://pantheon.io/docs/pantheon-yml/#enforce-https--hsts for valid values.
-enforce_https: transitional
+enforce_https: full
 
 # See https://pantheon.io/docs/pantheon-yml#protected-web-paths for usage.
 protected_web_paths:
