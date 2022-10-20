@@ -1,4 +1,7 @@
 name: Parallel Shell - Terminus Deployment
+on:
+  push:
+    branches: [master]
 jobs:
   deploy:
     runs-on: ubuntu-latest
