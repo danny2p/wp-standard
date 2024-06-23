@@ -1,0 +1,35 @@
+name: Deploy to Test
+on: 
+  workflow_dispatch:
+    inputs:
+      pantheon_tag:
+        description: 'Pantheon Tags to deploy to (Defaults to all)'
+        required: true
+        default: 'all'
+env:
+  INPUT_PANTHEON_TAG: ${{ github.event.inputs.pantheon_tag }}
+jobs:
+  build:
+    name: Deploy sites to TEST
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+   # Install Terminus.
+    - name: Install and Authorize Terminus
+      uses: pantheon-systems/terminus-github-actions@main
+      with:
+        pantheon-machine-token: ${{ secrets.TERMINUS_MACHINE_TOKEN }}
+    - name: Execute Parallel Deployment
+      env:
+        ORG_UUID: ${{ secrets.ORG_UUID }}
+        UPSTREAM_UUID: ${{ secrets.UPSTREAM_UUID }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+      run: |
+        if  [ $INPUT_PANTHEON_TAG == all ]
+        then
+          echo "Deploying all sites running this upstream."
+          terminus org:site:list $ORG_UUID --format list --upstream $UPSTREAM_UUID --field name | sort -V | parallel --jobs 100 .github/scripts/test-deploy.sh {}
+        else
+          echo "Deploying sites with tag: $INPUT_PANTHEON_TAG."
+          terminus org:site:list $ORG_UUID --format list --upstream $UPSTREAM_UUID  --tag $INPUT_PANTHEON_TAG --field name | sort -V | parallel --jobs 100 .github/scripts/test-deploy.sh {}
+        fi
