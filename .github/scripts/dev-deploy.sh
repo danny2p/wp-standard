@@ -13,7 +13,7 @@ START=$SECONDS
 # Tell slack we're starting this site
 SLACK_START="Started ${SITE} deployment to Dev"
 
-curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
+#curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
 echo -e "Starting ${SITE}";
 
 # Backup DB prior to deploy, 30 day retention
@@ -34,7 +34,7 @@ terminus upstream:updates:apply $DEV --updatedb --accept-upstream -q
 
 
 SLACK="${SITE} DEV Code Deployment Finished. Importing config and clearing cache."
-curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
+#curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
 # Run drush config import, clear cache
 # terminus drush "${1}.dev" -- cim -y
@@ -47,5 +47,5 @@ TIME_DIFF=$(bc <<< "scale=2; $DURATION / 60")
 MIN=$(printf "%.2f" $TIME_DIFF)
 SITE_LINK="https://dev-${SITE}.pantheonsite.io";
 SLACK=":white_check_mark: Finished ${SITE} deployment to Dev in ${MIN} minutes. \n ${SITE_LINK}"
-curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
+#curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
