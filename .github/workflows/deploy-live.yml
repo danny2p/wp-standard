@@ -3,14 +3,14 @@ on:
   workflow_dispatch:
     inputs:
       pantheon_tag:
-        description: 'Pantheon Tags to deploy to (Defaults to all)'
+        description: 'Deploy to sites tagged:'
         required: true
         default: 'all'
 env:
   INPUT_PANTHEON_TAG: ${{ github.event.inputs.pantheon_tag }}
 jobs:
   build:
-    name: Deploy sites to LIVE
+    name: Deploy code to LIVE
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
