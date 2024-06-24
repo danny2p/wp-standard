@@ -21,10 +21,8 @@ SLACK="Finished ${SITE} Live Backup. Deploying code."
 #curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 terminus env:deploy $SITE.live --cc -n -q
 
-# Run drush config import, clear cache
-terminus drush $SITE.dev -- cim -y
+# Run any post-deploy commands here
 terminus env:clear-cache $SITE.dev
-
 # Report time to results.
 DURATION=$(( SECONDS - START ))
 TIME_DIFF=$(bc <<< "scale=2; $DURATION / 60")

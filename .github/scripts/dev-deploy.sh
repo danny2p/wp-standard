@@ -17,14 +17,14 @@ SLACK_START="Started ${SITE} deployment to Dev"
 echo -e "Starting ${SITE}";
 
 # Backup DB prior to deploy, 30 day retention
-terminus backup:create --element database --keep-for 30 -- $SITE.live
+terminus backup:create --element database --keep-for 30 -- $SITE.dev
 
 # Check site upstream for updates, apply
 # terminus site:upstream:clear-cache $1 -q
 
 # terminus connection:set "${1}.dev" git
 # STATUS=$(terminus upstream:update:status "${1}.dev")
-terminus upstream:updates:apply $DEV --updatedb --accept-upstream -q
+terminus upstream:updates:apply $DEV --accept-upstream -q
 
 # if you want to push these updates to any multidev branch-based 
 # environments on a Pantheon site (ie: permanent pre-prod environment)
@@ -32,13 +32,10 @@ terminus upstream:updates:apply $DEV --updatedb --accept-upstream -q
 
 # terminus upstream:updates:apply --updatedb --accept-upstream -- <site>.<env>
 
-
 SLACK="${SITE} DEV Code Deployment Finished. Importing config and clearing cache."
 #curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
-# Run drush config import, clear cache
-# terminus drush "${1}.dev" -- cim -y
-terminus drush $SITE.dev -- cim -y
+# Run any post-deploy commands here
 terminus env:clear-cache $SITE.dev
 
 # Report time to results.

@@ -15,14 +15,12 @@ SLACK_START="Started ${SITE} Test deployment"
 echo -e "Starting ${SITE} Test Deployment";
 
 # Deploy code to test 
-terminus env:deploy $SITE.test --cc --updatedb -n -q
+terminus env:deploy $SITE.test --cc -n -q
 SLACK="${SITE} TEST Code Deployment Finished. Importing config and clearing cache."
 #curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
-#import config, clear cache if needed
-# Run drush config import, clear cache
-#terminus drush $SITE.dev -- cim -y
-#terminus env:clear-cache $SITE.dev
+# Run any post-deploy commands here
+terminus env:clear-cache $SITE.dev
 
 
 # Report time to results.
