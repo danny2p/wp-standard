@@ -20,6 +20,10 @@ SLACK="${SITE} TEST Code Deployment Finished. Importing config and clearing cach
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
 #import config, clear cache if needed
+# Run drush config import, clear cache
+#terminus drush $SITE.dev -- cim -y
+#terminus env:clear-cache $SITE.dev
+
 
 # Report time to results.
 DURATION=$(( SECONDS - START ))

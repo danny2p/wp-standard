@@ -16,6 +16,9 @@ SLACK_START="Started ${SITE} deployment to Dev"
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
 echo -e "Starting ${SITE}";
 
+# Backup DB prior to deploy, 30 day retention
+terminus backup:create --element database --keep-for 30 -- $SITE.live
+
 # Check site upstream for updates, apply
 # terminus site:upstream:clear-cache $1 -q
 
@@ -35,6 +38,7 @@ curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $S
 
 # Run drush config import, clear cache
 # terminus drush "${1}.dev" -- cim -y
+terminus drush $SITE.dev -- cim -y
 terminus env:clear-cache $SITE.dev
 
 # Report time to results.
