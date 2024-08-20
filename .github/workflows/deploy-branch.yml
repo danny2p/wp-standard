@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Pantheon Remote Branch Push
+name: 0) Pantheon Remote Branch Push
 
 # Repo Sync on Push
 on: 
