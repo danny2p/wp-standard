@@ -20,12 +20,12 @@ on:
           - 'Yes'
           - 'No'
         default: 'Yes'
-        site_name:
-          description: 'Site Name:'
-          required: true
-        site_label:
-          description: 'Site Label:'
-          required: true
+      site_name:
+        description: 'Site Name:'
+        required: true
+      site_label:
+        description: 'Site Label:'
+        required: true
 env:
   REGION: ${{ github.event.inputs.region }}
   SITE_LABEL: ${{ github.event.inputs.site_label }}
