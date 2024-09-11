@@ -66,7 +66,7 @@ jobs:
           echo -e "Starting ${PANTHEON_SITE}";
         fi
 
-        terminus site:create --org ORG_UUID --region REGION -- SITE_NAME SITE_LABEL UPSTREAM_UUID
+        terminus site:create --org $ORG_UUID --region $REGION -- $SITE_NAME $SITE_LABEL $UPSTREAM_UUID
 
         if  [ $DO_NOTIFY == "Yes" ]
         then
