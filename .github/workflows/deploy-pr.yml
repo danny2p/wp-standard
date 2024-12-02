@@ -80,6 +80,7 @@ jobs:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
           const { MULTIDEV_URL, PR_BRANCH_NAME, CANARY_SITE } = process.env;
+          const site_name = $(terminus site:info --fields label --format string -- ${CANARY_SITE})
           const doubleDash = (str) => str.replace(/-/g, '--');
           const site = doubleDash(CANARY_SITE);
           const branch = doubleDash(PR_BRANCH_NAME);
@@ -87,6 +88,6 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `[![Static Badge](https://img.shields.io/badge/${site}-${branch}-%23FFDC28?logo=pantheon&logoColor=white)](${MULTIDEV_URL})`
+            body: `[![Static Badge](https://img.shields.io/badge/${site_name}-${branch}-%23FFDC28?logo=pantheon&logoColor=white)](${MULTIDEV_URL})`
           });
  
