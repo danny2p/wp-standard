@@ -84,12 +84,13 @@ jobs:
         script: |
           const { MULTIDEV_URL, PR_BRANCH_NAME, CANARY_SITE,CANARY_SITE_LABEL } = process.env;
           const doubleDash = (str) => str.replace(/-/g, '--');
+          const spaceFix = (str) => str.replace(/ /g, '%20');
           const site = doubleDash(CANARY_SITE);
           const branch = doubleDash(PR_BRANCH_NAME);
-          const sitelabel = doubleDash(CANARY_SITE_LABEL);
+          const sitelabel = spaceFix(CANARY_SITE_LABEL);
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `[![Static Badge](https://img.shields.io/badge/'${sitelabel}'-${branch}-%23FFDC28?logo=pantheon&logoColor=white)](${MULTIDEV_URL})`,
+            body: `[![Static Badge](https://img.shields.io/badge/${sitelabel}-${branch}-%23FFDC28?logo=pantheon&logoColor=white)](${MULTIDEV_URL})`,
           });
