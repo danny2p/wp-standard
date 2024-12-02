@@ -37,7 +37,7 @@ jobs:
     - name: Get Canary site
       run: |
         CANARY_SITE=$(terminus org:site:list ${ORG_UUID} --format list --upstream ${UPSTREAM_UUID} --field name --tag canary | head -1)
-        CANARY_SITE_LABEL = $(terminus site:info --fields label --format string -- ${CANARY_SITE});
+        CANARY_SITE_LABEL=$(terminus site:info --fields label --format string -- ${CANARY_SITE})
 
         echo "CANARY_SITE=$CANARY_SITE" >> $GITHUB_ENV
         echo "CANARY_SITE_LABEL=$CANARY_SITE_LABEL" >> $GITHUB_ENV
