@@ -83,8 +83,6 @@ jobs:
           const doubleDash = (str) => str.replace(/-/g, '--');
           const site = doubleDash(CANARY_SITE);
           const branch = doubleDash(PR_BRANCH_NAME);
-          console.log('hello world: ');
-          console.log($(terminus site:info --fields label --format string -- ${CANARY_SITE}));
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
