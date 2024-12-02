@@ -37,7 +37,10 @@ jobs:
     - name: Get Canary site
       run: |
         CANARY_SITE=$(terminus org:site:list ${ORG_UUID} --format list --upstream ${UPSTREAM_UUID} --field name --tag canary | head -1)
+        CANARY_SITE_LABEL = $(terminus site:info --fields label --format string -- ${CANARY_SITE});
+
         echo "CANARY_SITE=$CANARY_SITE" >> $GITHUB_ENV
+        echo "CANARY_SITE_LABEL=$CANARY_SITE_LABEL" >> $GITHUB_ENV
         CANARY_REPO=$(terminus connection:info ${CANARY_SITE}.dev --fields git_url --format list)
         echo "CANARY_REPO=$CANARY_REPO" >> $GITHUB_ENV
       env:
@@ -79,14 +82,14 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          const { MULTIDEV_URL, PR_BRANCH_NAME, CANARY_SITE } = process.env;
+          const { MULTIDEV_URL, PR_BRANCH_NAME, CANARY_SITE,CANARY_SITE_LABEL } = process.env;
           const doubleDash = (str) => str.replace(/-/g, '--');
           const site = doubleDash(CANARY_SITE);
-          const sitelabel = doubleDash($(terminus site:info --fields label --format string -- $CANARY_SITE));
           const branch = doubleDash(PR_BRANCH_NAME);
+          const sitelabel = doubleDash(CANARY_SITE_LABEL);
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `[![Static Badge](https://img.shields.io/badge/${site}-${branch}-%23FFDC28?logo=pantheon&logoColor=white)](${MULTIDEV_URL})`,
+            body: `[![Static Badge](https://img.shields.io/badge/${sitelabel}-${branch}-%23FFDC28?logo=pantheon&logoColor=white)](${MULTIDEV_URL})`,
           });
