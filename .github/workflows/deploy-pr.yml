@@ -58,8 +58,8 @@ jobs:
 
         # Fetch full history from pantheon
         # git fetch --unshallow pantheon
-        #git checkout -b $PR_BRANCH_NAME
-        #git add .
+        # git checkout -b $PR_BRANCH_NAME
+        # git add .
 
         # Sync branch
         # git commit -m "GHA Upstream PR"
@@ -81,9 +81,13 @@ jobs:
         script: |
           const { MULTIDEV_URL, PR_BRANCH_NAME, CANARY_SITE } = process.env;
           const doubleDash = (str) => str.replace(/-/g, '--');
-          #const site_name = doubleDash($(terminus site:info --fields label --format string -- ${CANARY_SITE}));
+          # const site_name = doubleDash($(terminus site:info --fields label --format string -- ${CANARY_SITE}));
           const site = doubleDash(CANARY_SITE);
           const branch = doubleDash(PR_BRANCH_NAME);
+          
+          echo "Site LabeL: "
+          echo ($(terminus site:info --fields label --format string -- ${CANARY_SITE})
+
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
