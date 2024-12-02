@@ -88,5 +88,5 @@ jobs:
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: `[![Static Badge](https://img.shields.io/badge/${site_name}-${branch}-%23FFDC28?logo=pantheon&logoColor=white)](${MULTIDEV_URL})`
+            body: "[![Static Badge](https://img.shields.io/badge/${site_name}-${branch}-%23FFDC28?logo=pantheon&logoColor=white)](${MULTIDEV_URL})"
           });
