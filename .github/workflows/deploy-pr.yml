@@ -81,7 +81,7 @@ jobs:
         script: |
           const { MULTIDEV_URL, PR_BRANCH_NAME, CANARY_SITE } = process.env;
           const doubleDash = (str) => str.replace(/-/g, '--');
-          const site_name = doubleDash($(terminus site:info --fields label --format string -- ${CANARY_SITE}));
+          #const site_name = doubleDash($(terminus site:info --fields label --format string -- ${CANARY_SITE}));
           const site = doubleDash(CANARY_SITE);
           const branch = doubleDash(PR_BRANCH_NAME);
           github.rest.issues.createComment({
