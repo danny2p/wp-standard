@@ -9,6 +9,9 @@ php_version: 8.2
 database:
   version: 10.6
 
+object_cache:
+  version: 6.2
+
 # See https://pantheon.io/docs/pantheon-yml/#enforce-https--hsts for valid values.
 enforce_https: transitional
 
