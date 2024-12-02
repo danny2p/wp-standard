@@ -9,9 +9,10 @@ set -e
 SITE=$1
 DEV=$(echo "${SITE}.dev")
 START=$SECONDS
+SITE_LABEL=$(terminus site:info --fields label --format string -- ${SITE})
 
 # Tell slack we're starting this site
-SLACK_START="Started ${SITE} deployment to Dev"
+SLACK_START="Started ${SITE_LABEL} deployment to Dev"
 
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
 echo -e "Starting ${SITE}";
@@ -32,7 +33,7 @@ terminus upstream:updates:apply $DEV --accept-upstream -q
 
 # terminus upstream:updates:apply --updatedb --accept-upstream -- <site>.<env>
 
-SLACK="${SITE} DEV Code Deployment Finished. Importing config and clearing cache."
+SLACK="${SITE_LABEL} DEV Code Deployment Finished. Importing config and clearing cache."
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
 # Run any post-deploy commands here
@@ -43,6 +44,6 @@ DURATION=$(( SECONDS - START ))
 TIME_DIFF=$(bc <<< "scale=2; $DURATION / 60")
 MIN=$(printf "%.2f" $TIME_DIFF)
 SITE_LINK="https://dev-${SITE}.pantheonsite.io";
-SLACK=":white_check_mark: Finished ${SITE} deployment to Dev in ${MIN} minutes. \n ${SITE_LINK}"
+SLACK=":white_check_mark: Finished ${SITE_LABEL} deployment to Dev in ${MIN} minutes. \n ${SITE_LINK}"
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
