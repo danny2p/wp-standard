@@ -7,7 +7,7 @@ pipelines:
             description: "Deploy to sites tagged with this value"
       - step:
           name: Deploy to Dev
-          image: ubuntu:latest
+          image: quay.io/pantheon-public/build-tools-ci:8.x-php8.0
           services:
             - docker
           script:
@@ -18,10 +18,10 @@ pipelines:
             - export SLACK_WEBHOOK=$SLACK_WEBHOOK
 
             # Install Terminus
-            - echo "Installing Terminus..."
-            - curl -O https://github.com/pantheon-systems/terminus/releases/download/3.0.0-alpha/terminus.phar
-            - chmod +x terminus.phar
-            - sudo mv terminus.phar /usr/local/bin/terminus
+            #- echo "Installing Terminus..."
+            #- curl -O https://github.com/pantheon-systems/terminus/releases/download/3.0.0-alpha/terminus.phar
+            #- chmod +x terminus.phar
+            #- sudo mv terminus.phar /usr/local/bin/terminus
 
             # Authenticate Terminus 
             - echo "Authenticating Terminus..."
