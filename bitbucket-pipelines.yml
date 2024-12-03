@@ -1,0 +1,47 @@
+pipelines:
+  custom:
+    deploy-to-dev:
+      - variables:
+          - name: PANTHEON_TAG
+            default: all
+            description: "Deploy to sites tagged with this value"
+      - step:
+          name: Deploy to Dev
+          image: ubuntu:latest
+          services:
+            - docker
+          script:
+            # Set environment variables from pipeline inputs
+            - export INPUT_PANTHEON_TAG=${PANTHEON_TAG:-all}
+            - export ORG_UUID=$ORG_UUID
+            - export UPSTREAM_UUID=$UPSTREAM_UUID
+            - export SLACK_WEBHOOK=$SLACK_WEBHOOK
+
+            # Install Terminus
+            - echo "Installing Terminus..."
+            - curl -O https://github.com/pantheon-systems/terminus/releases/download/3.0.0-alpha/terminus.phar
+            - chmod +x terminus.phar
+            - sudo mv terminus.phar /usr/local/bin/terminus
+
+            # Authenticate Terminus 
+            - echo "Authenticating Terminus..."
+            - terminus auth:login --machine-token=$TERMINUS_MACHINE_TOKEN
+
+            # Deploy based on the pantheon_tag
+            - if [ "$INPUT_PANTHEON_TAG" == "all" ]; then
+                echo "Deploying to all sites running this upstream.";
+                terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/dev-deploy.sh {};
+              else
+                echo "Deploying to sites with tag: $INPUT_PANTHEON_TAG.";
+                terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --tag=$INPUT_PANTHEON_TAG --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/dev-deploy.sh {};
+              fi
+
+definitions:
+  services:
+    docker:
+      memory: 2048
+  variables:
+    ORG_UUID: ${ORG_UUID}
+    UPSTREAM_UUID: ${UPSTREAM_UUID}
+    TERMINUS_MACHINE_TOKEN: ${TERMINUS_MACHINE_TOKEN}
+    SLACK_WEBHOOK: ${SLACK_WEBHOOK}
