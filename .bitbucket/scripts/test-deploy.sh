@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Usage
+# ./live-deploy.sh <site-name or uuid>
+
+# Exit on error
+set -e
+
+SITE=$1
+START=$SECONDS
+SITE_LABEL=$(terminus site:info --fields label --format string -- ${SITE})
+
+# Tell slack we're starting this site
+SLACK_START="Started ${SITE_LABEL} Test deployment"
+curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
+echo -e "Starting ${SITE} Test Deployment";
+
+
+# Deploy code to test 
+terminus env:deploy $SITE.test --cc -n -q
+SLACK="${SITE_LABEL} TEST Code Deployment Finished. Importing config and clearing cache."
+curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
+
+# Run any post-deploy commands here
+terminus env:clear-cache $SITE.dev
+
+
+# Report time to results.
+DURATION=$(( SECONDS - START ))
+TIME_DIFF=$(bc <<< "scale=2; $DURATION / 60")
+MIN=$(printf "%.2f" $TIME_DIFF)
+echo -e "Finished ${SITE} in ${MIN} minutes"
+echo "${SITE},${ID},${MIN}" >> /tmp/results.txt
+
+SITE_LINK="https://test-${SITE}.pantheonsite.io";
+SLACK=":white_check_mark: Finished ${SITE_LABEL} full deployment in ${MIN} minutes. \n ${SITE_LINK}"
+curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
