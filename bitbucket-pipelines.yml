@@ -29,10 +29,10 @@ pipelines:
 
             # Deploy based on the pantheon_tag
             - if [ "$INPUT_PANTHEON_TAG" == "all" ]; then
-                echo "Deploying to all sites running this upstream."
-                terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/dev-deploy.sh {}
+                echo "Deploying to all sites running this upstream.";
+                terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/dev-deploy.sh {};
               else
-                echo "Deploying to sites with tag: ${INPUT_PANTHEON_TAG}."
+                echo "Deploying to sites matching tag.";
                 terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --tag=$INPUT_PANTHEON_TAG --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/dev-deploy.sh {};
               fi
 
