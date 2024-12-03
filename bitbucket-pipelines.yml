@@ -7,7 +7,8 @@ pipelines:
             description: "Deploy to sites tagged with this value"
       - step:
           name: Deploy to Dev
-          image: quay.io/pantheon-public/build-tools-ci:8.x-php8.0
+          image: quay.io/pantheon-public/build-tools-ci:8.x-php8.2
+          #https://quay.io/repository/pantheon-public/build-tools-ci?tab=tags
           services:
             - docker
           script:

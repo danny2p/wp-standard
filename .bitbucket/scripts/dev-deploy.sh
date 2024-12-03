@@ -39,11 +39,18 @@ curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $S
 # Run any post-deploy commands here
 terminus env:clear-cache $SITE.dev
 
-# Report time to results.
 DURATION=$(( SECONDS - START ))
-TIME_DIFF=$(bc <<< "scale=2; $DURATION / 60")
-MIN=$(printf "%.2f" $TIME_DIFF)
+MIN=$(( DURATION / 60 ))
+SECONDS_REMAIN=$(( DURATION % 60 ))
+# Round $MIN to 0 if it's less than 1
+if [ "$MIN" -lt 1 ]; then
+  MIN=0
+  TOTAL_TIME=$DURATION
+else
+  TOTAL_TIME="$MIN minutes and $SECONDS_REMAIN"
+fi
+
 SITE_LINK="https://dev-${SITE}.pantheonsite.io";
-SLACK=":white_check_mark: Finished ${SITE_LABEL} deployment to Dev in ${MIN} minutes. \n ${SITE_LINK}"
+SLACK=":white_check_mark: Finished ${SITE_LABEL} deployment to Dev in ${TOTAL_TIME} minutes. \n ${SITE_LINK}"
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
