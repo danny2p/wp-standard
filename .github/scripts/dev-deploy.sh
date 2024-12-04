@@ -21,7 +21,12 @@ SLACK_START="Started ${SITE_LABEL} deployment to Dev"
 echo -e "Starting ${SITE}";
 
 # Backup DB prior to deploy, 30 day retention
-[ $BACKUP == "Yes" ] && terminus backup:create --element database --keep-for 30 -- $SITE.dev
+if [ $BACKUP == "Yes" ] 
+then 
+  terminus backup:create --element database --keep-for 30 -- $SITE.dev
+  SLACK="Finished ${SITE_LABEL} Dev Backup. Deploying code."
+  [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
+fi
 
 # Check site upstream for updates, apply
 # terminus site:upstream:clear-cache $1 -q

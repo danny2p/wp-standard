@@ -17,11 +17,14 @@ SLACK_START="Started ${SITE_LABEL} Live deployment"
 [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
 echo -e "Starting ${SITE_LABEL} Live Deployment";
 
-# Backup DB only for live prior to deploy, 30 day retention
-terminus backup:create --element database --keep-for 30 -- $SITE.live
-
-SLACK="Finished ${SITE_LABEL} Live Backup. Deploying code."
-[ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
+# Backup DB prior to deploy, 30 day retention
+if [ $BACKUP == "Yes" ] 
+then 
+  terminus backup:create --element database --keep-for 30 -- $SITE.dev
+  terminus backup:create --element database --keep-for 30 -- $SITE.dev
+  SLACK="Finished ${SITE_LABEL} Live Backup. Deploying code."
+  [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
+fi
 
 # Deploy code to live 
 terminus env:deploy $SITE.live --cc -n -q

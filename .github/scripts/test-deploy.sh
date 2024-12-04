@@ -18,7 +18,13 @@ SLACK_START="Started ${SITE_LABEL} Test deployment"
 echo -e "Starting ${SITE} Test Deployment";
 
 # Backup DB prior to deploy, 30 day retention
-[ $BACKUP == "Yes" ] && terminus backup:create --element database --keep-for 30 -- $SITE.dev
+if [ $BACKUP == "Yes" ] 
+then 
+  terminus backup:create --element database --keep-for 30 -- $SITE.dev
+  terminus backup:create --element database --keep-for 30 -- $SITE.dev
+  SLACK="Finished ${SITE_LABEL} Test Backup. Deploying code."
+  [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
+fi
 
 # Deploy code to test 
 terminus env:deploy $SITE.test --cc -n -q
