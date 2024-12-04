@@ -1,0 +1,94 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Auto) Pantheon Remote Branch Push
+
+# Repo Sync on Push
+on: 
+  push:
+    # branches-ignore: ["master", "main"]
+    branches:
+      - 'md*'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      repository-projects: write
+      id-token: write
+    env:
+      GITHUB_CONTEXT: ${{ toJson(github) }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - name: Install SSH Key
+      uses: shimataro/ssh-key-action@v2
+      with:
+        key: ${{ secrets.PANTHEON_SSH_KEY }}
+        config: ${{ secrets.SSH_CONFIG }}
+        known_hosts: ${{ secrets.KNOWN_HOSTS }}
+    - name: Install Terminus
+      uses: pantheon-systems/terminus-github-actions@v1
+      with:
+        pantheon-machine-token: ${{ secrets.TERMINUS_MACHINE_TOKEN }}
+    - name: Get Committer Email and Name
+      run: |
+          COMMITTER_EMAIL=$(git log --format='%ae' -n 1 ${{ github.sha }})
+          COMMITTER_NAME=$(git log --format='%an' -n 1 ${{ github.sha }})
+
+          # Configure git defaults
+          git config --global user.email "$COMMITTER_EMAIL"
+          git config --global user.name "$COMMITTER_NAME"
+    - name: Get Canary site
+      run: |
+        CANARY_SITE=$(terminus org:site:list ${ORG_UUID} --format list --upstream ${UPSTREAM_UUID} --field name --tag canary | head -1)
+        echo "CANARY_SITE=$CANARY_SITE" >> $GITHUB_ENV
+        CANARY_REPO=$(terminus connection:info ${CANARY_SITE}.dev --fields git_url --format list)
+        echo "CANARY_REPO=$CANARY_REPO" >> $GITHUB_ENV
+        
+        # Tell slack we're starting this site
+        SLACK_START="Started ${CANARY_SITE} ${CI_BRANCH} deployment"
+        curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
+      env:
+        ORG_UUID: ${{ secrets.ORG_UUID }}
+        UPSTREAM_UUID: ${{ secrets.UPSTREAM_UUID }}
+        CI_BRANCH: ${{ github.ref_name }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    - name: Sync code to site
+      run: |
+        # Setup remote branch connection
+        git remote add pantheon $CANARY_REPO
+
+        # Set to git mode
+        if terminus env:info $CANARY_SITE.$CI_BRANCH > /dev/null 2>&1; then
+          terminus connection:set $CANARY_SITE.$CI_BRANCH git
+        fi
+
+        # Sync branch
+        git push -u --force pantheon HEAD:refs/heads/$CI_BRANCH
+      env:
+        CI_BRANCH: ${{ github.ref_name }}
+    - name: Create multidev if needed
+      id: branch-processor
+      run: |
+        if ! terminus env:info $CANARY_SITE.$CI_BRANCH > /dev/null 2>&1; then
+            terminus env:create $CANARY_SITE.dev $CI_BRANCH
+        else
+            echo "Environment $CI_BRANCH already exists."
+        fi
+        MULTIDEV_URL=$(echo "https://$CI_BRANCH-$CANARY_SITE.pantheonsite.io")
+        echo "MULTIDEV_URL=${MULTIDEV_URL}" >> $GITHUB_OUTPUT
+        echo "\n multidev: $MULTIDEV_URL"
+        # tell slack we're finished
+        SLACK_DONE=":white_check_mark: Finished ${CANARY_SITE} ${CI_BRANCH} deployment. \n ${MULTIDEV_URL}"
+        curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_DONE}'}" $SLACK_WEBHOOK
+      env:
+        CI_BRANCH: ${{ github.ref_name }}
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+    - name: Create commit comment
+      uses: peter-evans/commit-comment@v1
+      with:
+        body: |
+          Pantheon Multidev updated - ${{ steps.branch-processor.outputs.MULTIDEV_URL }}
+        
