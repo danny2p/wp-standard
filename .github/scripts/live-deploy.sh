@@ -28,9 +28,11 @@ fi
 
 # Deploy code to live 
 terminus env:deploy $SITE.live --cc -n -q
+SLACK="${SITE_LABEL} LIVE Code Deployment Finished. Importing config and clearing cache."
+[ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
 # Run any post-deploy commands here
-terminus env:clear-cache $SITE.live
+# terminus env:clear-cache $SITE.live
 
 # Report time to results.
 DURATION=$(( SECONDS - START ))

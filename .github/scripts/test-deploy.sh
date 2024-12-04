@@ -15,7 +15,7 @@ NOTIFY=$DO_NOTIFY
 # Tell slack we're starting this site
 SLACK_START="------------- :building_construction: Started ${SITE_LABEL} deployment to Test :building_construction: ------------- \n";
 [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
-echo -e "Starting ${SITE} Test Deployment";
+echo -e "Starting ${SITE_LABEL} Test Deployment";
 
 # Backup DB prior to deploy, 30 day retention
 if [ $BACKUP == "Yes" ] 
@@ -33,7 +33,6 @@ SLACK="${SITE_LABEL} TEST Code Deployment Finished. Importing config and clearin
 
 # Run any post-deploy commands here
 terminus env:clear-cache $SITE.test
-
 
 # Report time to results.
 DURATION=$(( SECONDS - START ))
