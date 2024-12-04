@@ -28,6 +28,11 @@ pipelines:
                 echo "Deploying to sites matching tag $INPUT_PANTHEON_TAG";
                 terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --tag=$INPUT_PANTHEON_TAG --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/dev-deploy.sh {};
               fi
+    deploy-to-test:
+      - variables:
+          - name: PANTHEON_TAG
+            default: all
+            description: "Deploy to sites tagged with this value"
       - step:
           name: Deploy to Test
           image: quay.io/pantheon-public/build-tools-ci:8.x-php8.2
@@ -51,6 +56,11 @@ pipelines:
                 echo "Deploying to sites matching tag $INPUT_PANTHEON_TAG";
                 terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --tag=$INPUT_PANTHEON_TAG --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/test-deploy.sh {};
               fi
+    deploy-to-live:
+      - variables:
+          - name: PANTHEON_TAG
+            default: all
+            description: "Deploy to sites tagged with this value"
       - step:
           name: Deploy to Live
           image: quay.io/pantheon-public/build-tools-ci:8.x-php8.2
