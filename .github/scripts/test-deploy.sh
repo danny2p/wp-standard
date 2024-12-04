@@ -9,17 +9,21 @@ set -e
 SITE=$1
 START=$SECONDS
 SITE_LABEL=$(terminus site:info --fields label --format string -- ${SITE})
+BACKUP=$DO_BACKUP
+NOTIFY=$DO_NOTIFY
 
 # Tell slack we're starting this site
 SLACK_START="Started ${SITE_LABEL} Test deployment"
-curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
+[ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
 echo -e "Starting ${SITE} Test Deployment";
 
+# Backup DB prior to deploy, 30 day retention
+[ $BACKUP == "Yes" ] && terminus backup:create --element database --keep-for 30 -- $SITE.dev
 
 # Deploy code to test 
 terminus env:deploy $SITE.test --cc -n -q
 SLACK="${SITE_LABEL} TEST Code Deployment Finished. Importing config and clearing cache."
-curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
+[ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
 # Run any post-deploy commands here
 terminus env:clear-cache $SITE.dev
@@ -34,4 +38,4 @@ echo "${SITE},${ID},${MIN}" >> /tmp/results.txt
 
 SITE_LINK="https://test-${SITE}.pantheonsite.io";
 SLACK=":white_check_mark: Finished ${SITE_LABEL} full deployment in ${MIN} minutes. \n ${SITE_LINK}"
-curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
+[ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK

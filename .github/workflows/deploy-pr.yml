@@ -1,4 +1,4 @@
-name: 0) Deploy PR to Pantheon Canary Multidev
+name: Auto) Deploy PR to Pantheon Canary Multidev
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -59,13 +59,6 @@ jobs:
           terminus connection:set $CANARY_SITE.$PR_BRANCH_NAME git
         fi
 
-        # Fetch full history from pantheon
-        # git fetch --unshallow pantheon
-        # git checkout -b $PR_BRANCH_NAME
-        # git add .
-
-        # Sync branch
-        # git commit -m "GHA Upstream PR"
         git push -u --force pantheon HEAD:refs/heads/$PR_BRANCH_NAME
 
     - name: Create multidev if needed

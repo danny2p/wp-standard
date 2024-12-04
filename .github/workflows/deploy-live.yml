@@ -1,4 +1,4 @@
-name: 3) Deploy to Live
+name: Manual) Deploy to Live
 on: 
   workflow_dispatch:
     inputs:
@@ -6,8 +6,22 @@ on:
         description: 'Deploy to sites tagged:'
         required: true
         default: 'all'
-env:
-  INPUT_PANTHEON_TAG: ${{ github.event.inputs.pantheon_tag }}
+      do_backup:
+        description: 'Create Backup First?'
+        required: true
+        type: choice
+        options: 
+          - 'Yes'
+          - 'No'
+        default: 'Yes'
+      do_notify:
+        description: 'Notify Slack Deploy Channel?'
+        required: true
+        type: choice
+        options: 
+          - 'Yes'
+          - 'No'
+        default: 'Yes'
 jobs:
   build:
     name: Deploy code to LIVE
@@ -24,6 +38,9 @@ jobs:
         ORG_UUID: ${{ secrets.ORG_UUID }}
         UPSTREAM_UUID: ${{ secrets.UPSTREAM_UUID }}
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+        INPUT_PANTHEON_TAG: ${{ github.event.inputs.pantheon_tag }}
+        DO_BACKUP: ${{ github.event.inputs.do_backup }}
+        DO_NOTIFY: ${{ github.event.inputs.do_notify }}
       run: |
         if  [ $INPUT_PANTHEON_TAG == all ]
         then
