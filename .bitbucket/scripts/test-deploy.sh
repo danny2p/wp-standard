@@ -34,7 +34,7 @@ if [ "$MIN" -lt 1 ]; then
   MIN=0
   TOTAL_TIME="${DURATION} seconds"
 else
-  TOTAL_TIME="${MIN} minutes and ${SECONDS_REMAIN}"
+  TOTAL_TIME="${MIN} minutes ${SECONDS_REMAIN} seconds"
 fi
 
 SITE_LINK="https://test-${SITE}.pantheonsite.io";
