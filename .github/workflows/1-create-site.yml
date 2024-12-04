@@ -26,11 +26,6 @@ on:
       site_label:
         description: 'Site Label:'
         required: true
-env:
-  REGION: ${{ github.event.inputs.region }}
-  SITE_LABEL: ${{ github.event.inputs.site_label }}
-  SITE_NAME: ${{ github.event.inputs.site_name }}
-  DO_NOTIFY: ${{ github.event.inputs.do_notify }}
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -54,6 +49,10 @@ jobs:
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
         ORG_UUID: ${{ secrets.ORG_UUID }}
         UPSTREAM_UUID: ${{ secrets.UPSTREAM_UUID }}
+        REGION: ${{ github.event.inputs.region }}
+        SITE_LABEL: ${{ github.event.inputs.site_label }}
+        SITE_NAME: ${{ github.event.inputs.site_name }}
+        DO_NOTIFY: ${{ github.event.inputs.do_notify }}
       run: |
 
         #!/bin/bash
@@ -67,9 +66,9 @@ jobs:
           curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
         fi
 
-        terminus site:create --org $ORG_UUID --region $REGION -- $SITE_NAME "${SITE_LABEL}" $UPSTREAM_UUID
+        terminus site:create --org $ORG_UUID --region $REGION -- $SITE_NAME '${SITE_LABEL}' $UPSTREAM_UUID
         #tag this site in Pantheon
-        terminus tag:add $SITE_LABEL GHA
+        terminus tag:add $SITE_NAME GHA
 
         # get dashboard link by site_name
         DASHBOARD=$(terminus dashboard:view $SITE_NAME --print)
