@@ -20,8 +20,8 @@ echo -e "Starting ${SITE} Test Deployment";
 # Backup DB prior to deploy, 30 day retention
 if [ $BACKUP == "Yes" ] 
 then 
-  terminus backup:create --element database --keep-for 30 -- $SITE.dev
-  terminus backup:create --element database --keep-for 30 -- $SITE.dev
+  terminus backup:create --element database --keep-for 30 -- $SITE.test
+  terminus backup:create --element database --keep-for 30 -- $SITE.test
   SLACK="Finished ${SITE_LABEL} Test Backup. Deploying code."
   [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 fi
@@ -32,7 +32,7 @@ SLACK="${SITE_LABEL} TEST Code Deployment Finished. Importing config and clearin
 [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
 # Run any post-deploy commands here
-terminus env:clear-cache $SITE.dev
+terminus env:clear-cache $SITE.test
 
 
 # Report time to results.
