@@ -17,17 +17,9 @@ pipelines:
             - export ORG_UUID=$ORG_UUID
             - export UPSTREAM_UUID=$UPSTREAM_UUID
             - export SLACK_WEBHOOK=$SLACK_WEBHOOK
-
-            # Install Terminus
-            #- echo "Installing Terminus..."
-            #- curl -O https://github.com/pantheon-systems/terminus/releases/download/3.0.0-alpha/terminus.phar
-            #- chmod +x terminus.phar
-            #- sudo mv terminus.phar /usr/local/bin/terminus
-
             # Authenticate Terminus 
             - echo "Authenticating Terminus..."
             - terminus auth:login --machine-token=$TERMINUS_MACHINE_TOKEN
-
             # Deploy based on the pantheon_tag
             - if [ "$INPUT_PANTHEON_TAG" == "all" ]; then
                 echo "Deploying to all sites running this upstream.";
@@ -36,7 +28,52 @@ pipelines:
                 echo "Deploying to sites matching tag $INPUT_PANTHEON_TAG";
                 terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --tag=$INPUT_PANTHEON_TAG --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/dev-deploy.sh {};
               fi
-
+      - step:
+          name: Deploy to Test
+          image: quay.io/pantheon-public/build-tools-ci:8.x-php8.2
+          #https://quay.io/repository/pantheon-public/build-tools-ci?tab=tags
+          services:
+            - docker
+          script:
+            # Set environment variables from pipeline inputs
+            - export INPUT_PANTHEON_TAG=${PANTHEON_TAG:-all}
+            - export ORG_UUID=$ORG_UUID
+            - export UPSTREAM_UUID=$UPSTREAM_UUID
+            - export SLACK_WEBHOOK=$SLACK_WEBHOOK
+            # Authenticate Terminus 
+            - echo "Authenticating Terminus..."
+            - terminus auth:login --machine-token=$TERMINUS_MACHINE_TOKEN
+            # Deploy based on the pantheon_tag
+            - if [ "$INPUT_PANTHEON_TAG" == "all" ]; then
+                echo "Deploying to all sites running this upstream.";
+                terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/test-deploy.sh {};
+              else
+                echo "Deploying to sites matching tag $INPUT_PANTHEON_TAG";
+                terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --tag=$INPUT_PANTHEON_TAG --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/test-deploy.sh {};
+              fi
+      - step:
+          name: Deploy to Live
+          image: quay.io/pantheon-public/build-tools-ci:8.x-php8.2
+          #https://quay.io/repository/pantheon-public/build-tools-ci?tab=tags
+          services:
+            - docker
+          script:
+            # Set environment variables from pipeline inputs
+            - export INPUT_PANTHEON_TAG=${PANTHEON_TAG:-all}
+            - export ORG_UUID=$ORG_UUID
+            - export UPSTREAM_UUID=$UPSTREAM_UUID
+            - export SLACK_WEBHOOK=$SLACK_WEBHOOK
+            # Authenticate Terminus 
+            - echo "Authenticating Terminus..."
+            - terminus auth:login --machine-token=$TERMINUS_MACHINE_TOKEN
+            # Deploy based on the pantheon_tag
+            - if [ "$INPUT_PANTHEON_TAG" == "all" ]; then
+                echo "Deploying to all sites running this upstream.";
+                terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/live-deploy.sh {};
+              else
+                echo "Deploying to sites matching tag $INPUT_PANTHEON_TAG";
+                terminus org:site:list $ORG_UUID --format=list --upstream=$UPSTREAM_UUID --tag=$INPUT_PANTHEON_TAG --field=name | sort -V | parallel --jobs 100 .bitbucket/scripts/live-deploy.sh {};
+              fi
 definitions:
   services:
     docker:

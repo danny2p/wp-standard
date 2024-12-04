@@ -12,7 +12,7 @@ START=$SECONDS
 SITE_LABEL=$(terminus site:info --fields label --format string -- ${SITE})
 
 # Tell slack we're starting this site
-SLACK_START="Started ${SITE_LABEL} Live deployment"
+SLACK_START="------------- :lightningbolt-vfx: Started ${SITE_LABEL} deployment to Live :lightningbolt-vfx: ------------- \n";
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
 echo -e "Starting ${SITE_LABEL} Live Deployment";
 
@@ -23,12 +23,20 @@ curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $S
 terminus env:deploy $SITE.live --cc -n -q
 
 # Run any post-deploy commands here
-terminus env:clear-cache $SITE.dev
+terminus env:clear-cache $SITE.live
+
 # Report time to results.
 DURATION=$(( SECONDS - START ))
-TIME_DIFF=$(bc <<< "scale=2; $DURATION / 60")
-MIN=$(printf "%.2f" $TIME_DIFF)
+MIN=$(( DURATION / 60 ))
+SECONDS_REMAIN=$(( DURATION % 60 ))
+# Round $MIN to 0 if it's less than 1
+if [ "$MIN" -lt 1 ]; then
+  MIN=0
+  TOTAL_TIME="${DURATION} seconds"
+else
+  TOTAL_TIME="${MIN} minutes and ${SECONDS_REMAIN}"
+fi
 
 SITE_LINK="https://live-${SITE}.pantheonsite.io";
-SLACK=":white_check_mark: Finished ${SITE_LABEL} full deployment in ${MIN} minutes. \n ${SITE_LINK}"
+SLACK=":white_check_mark: Finished ${SITE_LABEL} deployment to Live in ${TOTAL_TIME}. \n ${SITE_LINK}"
 curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
