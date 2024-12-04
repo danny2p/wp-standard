@@ -1,4 +1,4 @@
-name: (Manual) Create new Site Instance
+name: (Manual) 0 - Create new Site Instance
 on: 
   workflow_dispatch:
     inputs:
@@ -62,14 +62,15 @@ jobs:
         if  [ $DO_NOTIFY == "Yes" ]
         then
           # Tell slack we're starting this site
-          SLACK_START="~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ \n Creating New Site ${SITE_NAME} \n"
+          SLACK_START="------------- :building_construction: Creating new site - ${SITE_NAME}  :building_construction: ------------- \n"
           echo -e "Starting ${PANTHEON_SITE}";
+          curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
         fi
 
-        terminus site:create --org $ORG_UUID --region $REGION -- $SITE_NAME $SITE_LABEL $UPSTREAM_UUID
+        terminus site:create --org $ORG_UUID --region $REGION -- $SITE_NAME "${SITE_LABEL}" $UPSTREAM_UUID
+        
+        #get dashboard link by site_name
 
-        if  [ $DO_NOTIFY == "Yes" ]
-        then
-          SLACK="${SITE_NAME} Site Creation Complete"
-          curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
-        fi
+        DASHBOARD=$(terminus dashboard:view $SITE_NAME --print)
+        SLACK="${SITE_LABEL} Site Creation Complete. ${DASHBOARD}"
+        [ $DO_NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
