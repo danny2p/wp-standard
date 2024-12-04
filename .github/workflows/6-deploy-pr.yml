@@ -1,4 +1,4 @@
-name: Auto) Deploy PR to Pantheon Canary Multidev
+name: (Auto) Deploy PR to Pantheon Canary Multidev
 on:
   pull_request:
     types: [opened, synchronize, reopened]

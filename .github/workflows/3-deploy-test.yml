@@ -1,4 +1,4 @@
-name: Manual) 2 - Deploy to Test
+name: (Manual) 2 - Deploy to Test
 on: 
   workflow_dispatch:
     inputs:

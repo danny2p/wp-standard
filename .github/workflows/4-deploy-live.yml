@@ -1,4 +1,4 @@
-name: Manual) 3 - Deploy to Live
+name: (Manual) 3 - Deploy to Live
 on: 
   workflow_dispatch:
     inputs:
