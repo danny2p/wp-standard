@@ -40,7 +40,6 @@ DURATION=$(( SECONDS - START ))
 TIME_DIFF=$(bc <<< "scale=2; $DURATION / 60")
 MIN=$(printf "%.2f" $TIME_DIFF)
 echo -e "Finished ${SITE} in ${MIN} minutes"
-echo "${SITE},${ID},${MIN}" >> /tmp/results.txt
 
 SITE_LINK="https://test-${SITE}.pantheonsite.io";
 SLACK=":white_check_mark: Finished ${SITE_LABEL} full deployment in ${MIN} minutes. \n ${SITE_LINK}"
