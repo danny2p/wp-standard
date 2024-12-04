@@ -14,8 +14,7 @@ BACKUP=$DO_BACKUP
 NOTIFY=$DO_NOTIFY
 
 # Tell slack we're starting this site
-SLACK_START="Started ${SITE_LABEL} deployment to Dev"
-
+SLACK_START="------------- :building_construction: Started ${SITE_LABEL} deployment to Dev :building_construction: ------------- \n";
 [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK_START}'}" $SLACK_WEBHOOK
 
 echo -e "Starting ${SITE}";
