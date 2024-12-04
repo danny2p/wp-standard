@@ -68,9 +68,10 @@ jobs:
         fi
 
         terminus site:create --org $ORG_UUID --region $REGION -- $SITE_NAME "${SITE_LABEL}" $UPSTREAM_UUID
-        
-        #get dashboard link by site_name
+        #tag this site in Pantheon
+        terminus tag:add $SITE_LABEL GHA
 
+        # get dashboard link by site_name
         DASHBOARD=$(terminus dashboard:view $SITE_NAME --print)
         SLACK="${SITE_LABEL} Site Creation Complete. ${DASHBOARD}"
         [ $DO_NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
