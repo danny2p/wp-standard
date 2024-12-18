@@ -47,10 +47,10 @@ jobs:
         if  [ $INPUT_PANTHEON_TAG == all ]
         then
           echo "Deploying to all sites running this upstream."
-          terminus org:site:list $ORG_UUID
+          terminus org:site:list $ORG_UUID  --upstream $UPSTREAM_UUID --field name
           terminus org:site:list $ORG_UUID --format list --upstream $UPSTREAM_UUID --field name | sort -V | parallel --jobs 100 .github/scripts/dev-deploy.sh {}
         else
           echo "Deploying to sites with tag: $INPUT_PANTHEON_TAG."
-          terminus org:info $ORG_UUID
+          terminus org:info $ORG_UUID --upstream $UPSTREAM_UUID --tag $INPUT_PANTHEON_TAG --field name
           terminus org:site:list $ORG_UUID --format list --upstream $UPSTREAM_UUID  --tag $INPUT_PANTHEON_TAG --field name | sort -V | parallel --jobs 100 .github/scripts/dev-deploy.sh {}
         fi
