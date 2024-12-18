@@ -22,7 +22,7 @@ echo -e "Starting ${SITE} \n";
 # Backup DB prior to deploy, 30 day retention
 if [ $BACKUP == "Yes" ] 
 then 
-  terminus backup:create --element database --keep-for 30 -- $SITE.dev
+  terminus backup:create --element database --keep-for 30 -- $DEV
   SLACK="Finished ${SITE_LABEL} Dev Backup. Deploying code."
   [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 fi
@@ -44,7 +44,7 @@ echo -e "Finished applying upstream updates for ${SITE} \n";
 [ $NOTIFY == "Yes" ] && curl -X POST -H 'Content-type: application/json' --data "{'text':'${SLACK}'}" $SLACK_WEBHOOK
 
 # Run any post-deploy commands here
-terminus env:clear-cache $SITE.dev --verbose 3
+terminus env:clear-cache $DEV -vvv
 echo -e "Finished clearing cache for ${SITE} \n";
 
 # Report time to results.
